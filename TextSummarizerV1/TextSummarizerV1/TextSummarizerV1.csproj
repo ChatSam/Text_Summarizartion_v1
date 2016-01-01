@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Preprocessor.cs" />
+    <Compile Include="Stemmer.cs" />
     <Compile Include="SummarizerMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

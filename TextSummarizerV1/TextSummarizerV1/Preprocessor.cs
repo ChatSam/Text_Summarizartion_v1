@@ -2,12 +2,22 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace TextSummarizerV1
 {
+    ///
+    /// Text Summarizer Version 1
+    /// Author - Chatura Samarasinghe
+    /// References - Porter's alogoritm - http://tartarus.org/~martin/PorterStemmer/csharp3.txt
+    ///              - Author - Brad Patton - http://ratborg.blogspot.com/
+
+
+
+
     class Preprocessor
     {
         //todo: check if the static keyword is needed
@@ -31,21 +41,28 @@ namespace TextSummarizerV1
 
             IList<string> inSenetences = SegmentSentences(inTextLowerCase);
 
-            IList<string> inTextNoStopWords = RemoveStopWords(ref inSenetences, stopWordFilePath);
+            IList<string> inTextNoStopWords = RemoveStopWordsAndPunctuation(ref inSenetences, stopWordFilePath);
+
+            IList<string> inTextWordStemmed = WordStemmer(inTextNoStopWords);
 
         }
 
 
         private IList<string> SegmentSentences(string inTextLowerCase)
         {
-            //todo: the function splits even sentences with commas - fix needed
+            //todo: the function splits even sentences with commas, or numbers with decimal points - fix needed
             var inSentences = Regex.Split(inTextLowerCase, @"(?<=[\.!\?])\s+");
 
             return inSentences;
         }
 
-
-        private IList<string> RemoveStopWords(ref IList<string> inSentences, string stopWordFilePath)
+        /// <summary>
+        /// Removees stop words and punctuation
+        /// </summary>
+        /// <param name="inSentences"></param>
+        /// <param name="stopWordFilePath"></param>
+        /// <returns></returns>
+        private IList<string> RemoveStopWordsAndPunctuation(ref IList<string> inSentences, string stopWordFilePath)
         {
 
             //initializing stop words
@@ -60,7 +77,7 @@ namespace TextSummarizerV1
 
                 splitSentence.RemoveAll(word => stopWordList.Contains(word));
 
-                inSentences[i] = string.Join("||", splitSentence);
+                inSentences[i] = string.Join("|", splitSentence);
 
             }
 
@@ -68,11 +85,27 @@ namespace TextSummarizerV1
         }
 
 
-       
+        public static IList<string> WordStemmer(IList<string> inSentences)
+        {
+            Stemmer stemmer = new Stemmer();
+
+            for (int i = 0; i < inSentences.Count; i++)
+            {
+                var words = inSentences[i].Split('|');
+
+                for (int k = 0; k < words.Length; k++)
+                {
+                    words[k] = stemmer.StemWord(words[k]);
+                }
+
+                inSentences[i] = string.Join("|",words);
+            }
+
+            return inSentences;
+        }
 
 
-        //remove suffixes [tokenization and word stemmer]
-
+     
         //remove punctuation
 
         //return 
