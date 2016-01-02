@@ -23,6 +23,7 @@ namespace TextSummarizerV1
         //todo: check if the static keyword is needed
         private static string _initialText;
 
+
         public Preprocessor(string initialText)
         {
             _initialText = initialText;
@@ -34,6 +35,8 @@ namespace TextSummarizerV1
         /// </summary>
         public void RunPreprocessor()
         {
+            TextModel text = new TextModel();
+
             //convert to lower case (string text) 
             string inTextLowerCase = _initialText.ToLower();
 
@@ -41,9 +44,15 @@ namespace TextSummarizerV1
 
             IList<string> inSenetences = SegmentSentences(inTextLowerCase);
 
-            IList<string> inTextNoStopWords = RemoveStopWordsAndPunctuation(ref inSenetences, stopWordFilePath);
+            TextModel unStemmedText = GetRawText(inSenetences);
 
-            IList<string> inTextWordStemmed = WordStemmer(inTextNoStopWords);
+            TextModel inTextNoStopWords = RemoveStopWordsAndPunctuation(ref inSenetences, stopWordFilePath);
+
+            //IList<string> inTextWordStemmed = WordStemmer(inTextNoStopWords);
+
+            TextModel inTextWordStemmed = WordStemmer(inTextNoStopWords);
+
+            
 
         }
 
@@ -62,8 +71,10 @@ namespace TextSummarizerV1
         /// <param name="inSentences"></param>
         /// <param name="stopWordFilePath"></param>
         /// <returns></returns>
-        private IList<string> RemoveStopWordsAndPunctuation(ref IList<string> inSentences, string stopWordFilePath)
+        private TextModel RemoveStopWordsAndPunctuation(ref IList<string> inSentences, string stopWordFilePath)
         {
+
+            TextModel text = new TextModel();
 
             //initializing stop words
             var stopWordListRaw = File.ReadAllText(stopWordFilePath);
@@ -73,42 +84,61 @@ namespace TextSummarizerV1
             //remove stop words
             for (int i = 0; i < inSentences.Count; i++)
             {
-                List<string> splitSentence = Regex.Split(inSentences[i], "\\W+").ToList();
+                var wordsFromSentence = TokenizeSentence(inSentences[i]);
 
-                splitSentence.RemoveAll(word => stopWordList.Contains(word));
+                wordsFromSentence.RemoveAll(word => stopWordList.Contains(word));
 
-                inSentences[i] = string.Join("|", splitSentence);
+                inSentences[i] = string.Join("|", wordsFromSentence);
+
+                // add the cleaned sentences to the TextModel
+                text.AddSentence(wordsFromSentence);
 
             }
 
-            return inSentences;
+            return text;
         }
 
 
-        public static IList<string> WordStemmer(IList<string> inSentences)
+        private static TextModel GetRawText(IList<string> inSentences)
         {
-            Stemmer stemmer = new Stemmer();
+            TextModel rawText = new TextModel();
 
             for (int i = 0; i < inSentences.Count; i++)
             {
-                var words = inSentences[i].Split('|');
+                var wordsFromSentence = TokenizeSentence(inSentences[i]);
 
-                for (int k = 0; k < words.Length; k++)
-                {
-                    words[k] = stemmer.StemWord(words[k]);
-                }
-
-                inSentences[i] = string.Join("|",words);
+                // add the un-stemmed text
+                rawText.AddSentence(wordsFromSentence);
             }
 
-            return inSentences;
+            return rawText;
+        }
+
+        //todo: no proper tokenizer currently implemented
+        private static List<string> TokenizeSentence(string inSentence)
+        {
+            List<string> tokenizedSentence = Regex.Split(inSentence, "\\W+", RegexOptions.IgnorePatternWhitespace).ToList();
+
+            tokenizedSentence.RemoveAll(word => word.Equals(""));
+
+            return tokenizedSentence;
         }
 
 
-     
-        //remove punctuation
+        public static TextModel WordStemmer(TextModel text)
+        {
+            Stemmer stemmer = new Stemmer();
 
-        //return 
+            for (int i = 0; i < text.SentenceCount(); i++)
+            {
+                for (int k = 0; k < text.WordCount(i); k++)
+                {
+                    var stemmedWord = stemmer.StemWord(text.GetWord(i,k));
 
+                    text.SetWord(i,k, stemmedWord);
+                }
+            }
+            return text;
+        }
     }
 }
