@@ -11,7 +11,7 @@ namespace TextSummarizerV1
     {
         
         //Upper list is the represents sentences while the inner represents the words
-        private static List<List<string>> _text;
+        private List<List<string>> _text;
 
         public  TextModel()
         {
@@ -54,6 +54,11 @@ namespace TextSummarizerV1
         public string GetWord(int sentencePostion, int wordPosition)
         {
             return _text[sentencePostion][wordPosition];
+        }
+
+        public List<string> GetSentence(int sentencePostion)
+        {
+            return _text[sentencePostion];
         }
 
 

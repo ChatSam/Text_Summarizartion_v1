@@ -36,12 +36,12 @@ namespace TextSummarizerV1
 
             double thresholdValue = 5.0;
 
-            sentenceSelector.RunSentenceSelector(sentenceScores, thresholdValue);
+            List<int>rankedSentenceIds= sentenceSelector.RunSentenceSelector(sentenceScores, thresholdValue);
 
             //send to generate summary
+            SummaryGenerator summaryGenerator = new SummaryGenerator(text);
 
-
-
+            summaryGenerator.GenerateSummary(rankedSentenceIds);
             //evalute performance
 
             //save summary to doc

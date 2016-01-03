@@ -9,7 +9,7 @@ namespace TextSummarizerV1
 {
     class FeatureExtractor
     {
-        private static TextModel _text;
+        private  TextModel _text;
 
         public FeatureExtractor(TextModel text)
         {
@@ -36,7 +36,7 @@ namespace TextSummarizerV1
             return sentenceScore;
         }
 
-        private static Dictionary<string, int> CalculateTermFrequency()
+        private  Dictionary<string, int> CalculateTermFrequency()
         {
             Dictionary<string, int> termFrequency = new Dictionary<string, int>();
 
@@ -57,7 +57,7 @@ namespace TextSummarizerV1
             return termFrequency;
         }
 
-        private static Dictionary<string, int> CalculateSentenceFrequencyPerWord(Dictionary<string,int> wordDictionary)
+        private  Dictionary<string, int> CalculateSentenceFrequencyPerWord(Dictionary<string,int> wordDictionary)
         {
             // this dictionary has the no. of the sentences in which the term i occurs
             Dictionary<string, int> wordSenetenceCounter = new Dictionary<string, int>();
@@ -83,7 +83,7 @@ namespace TextSummarizerV1
         }
 
 
-        private static Dictionary<string, double> CalculateInverseSentenceFrequency(
+        private  Dictionary<string, double> CalculateInverseSentenceFrequency(
             Dictionary<string, int> sentenceFrequency, Dictionary<string, int> termFrequencyValues)
         {
             Dictionary<string,double> inverseSentenceFrequencyValues = new Dictionary<string, double>();
@@ -106,7 +106,7 @@ namespace TextSummarizerV1
             return inverseSentenceFrequencyValues;
         }
 
-        private static Dictionary<string, double> CalculateTermFreqInverseTermFreq(
+        private  Dictionary<string, double> CalculateTermFreqInverseTermFreq(
             Dictionary<string, int> termFrequency, Dictionary<string, double> inverseTermFrequency)
         {
             Dictionary<string, double> termFreqInverseSentenceFreqValues = new Dictionary<string, double>();
@@ -121,7 +121,7 @@ namespace TextSummarizerV1
             return termFreqInverseSentenceFreqValues;
         }
 
-        private static Dictionary<string, double> Normalize(Dictionary<string, double> termFreqInverseSentenceFreqValues)
+        private  Dictionary<string, double> Normalize(Dictionary<string, double> termFreqInverseSentenceFreqValues)
         {
             Dictionary<string,double> normalizedValues  = new Dictionary<string, double>();
 
@@ -139,14 +139,14 @@ namespace TextSummarizerV1
             return normalizedValues;
         }
 
-        private static double FineNormalize(double normalizedValue, double maxNormalizedValue)
+        private  double FineNormalize(double normalizedValue, double maxNormalizedValue)
         {
             double fineNormalized = normalizedValue / maxNormalizedValue;
 
             return fineNormalized;
         }
 
-        private static Dictionary<int, double> CalculateSentenceScores(Dictionary<string, double> normalizedTermFreqInverseSentFreqValues)
+        private  Dictionary<int, double> CalculateSentenceScores(Dictionary<string, double> normalizedTermFreqInverseSentFreqValues)
         {
             Dictionary<int,double> rankedSentence = new Dictionary<int, double>();
 
