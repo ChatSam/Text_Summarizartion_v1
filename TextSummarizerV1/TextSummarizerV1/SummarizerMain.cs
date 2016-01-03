@@ -15,7 +15,6 @@ namespace TextSummarizerV1
             TextModel text = new TextModel();
 
             //get the document
-
             string path = "..\\..\\Resources\\Test\\inputNews.txt";
 
             //pass it to a string 
@@ -34,19 +33,21 @@ namespace TextSummarizerV1
             //send it to sentence selection and assembly
             SentenceSelector sentenceSelector = new SentenceSelector(text);
 
-            double thresholdValue = 5.0;
+                //thresoldValue to controller the size of the summary
+                double thresholdValue = 7.0;
 
-            List<int>rankedSentenceIds= sentenceSelector.RunSentenceSelector(sentenceScores, thresholdValue);
+            List<int>rankedSentenceIds = sentenceSelector.RunSentenceSelector(sentenceScores, thresholdValue);
+
+            TextModel unstemmedText =  preprocessor.GetUnstemmedText();
 
             //send to generate summary
-            SummaryGenerator summaryGenerator = new SummaryGenerator(text);
+            SummaryGenerator summaryGenerator = new SummaryGenerator(text, unstemmedText);
 
             summaryGenerator.GenerateSummary(rankedSentenceIds);
+
             //evalute performance
 
             //save summary to doc
-
-            //print summary 
 
         }
     }

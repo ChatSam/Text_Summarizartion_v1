@@ -23,6 +23,8 @@ namespace TextSummarizerV1
         //todo: check if the static keyword is needed
         private static string _initialText;
 
+        private static TextModel _unstemmedText;
+
 
         public Preprocessor(string initialText)
         {
@@ -44,7 +46,7 @@ namespace TextSummarizerV1
 
             IList<string> inSenetences = SegmentSentences(inTextLowerCase);
 
-            TextModel unStemmedText = GetRawText(inSenetences);
+            _unstemmedText = GetRawText(inSenetences);
 
             TextModel inTextNoStopWords = RemoveStopWordsAndPunctuation(ref inSenetences, stopWordFilePath);
 
@@ -55,6 +57,10 @@ namespace TextSummarizerV1
             return inTextWordStemmed;
         }
 
+        public TextModel GetUnstemmedText()
+        {
+            return _unstemmedText;
+        }
 
         private IList<string> SegmentSentences(string inTextLowerCase)
         {

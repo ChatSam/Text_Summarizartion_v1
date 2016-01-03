@@ -11,15 +11,23 @@ namespace TextSummarizerV1
     {
 
         private readonly TextModel _text;
+        private readonly TextModel _unstemmedText;
 
-        public SummaryGenerator(TextModel text)
+        public SummaryGenerator(TextModel text, TextModel orignalUnstemmedText)
         {
             _text = text;
+            _unstemmedText = orignalUnstemmedText;
         }
 
-        public void GenerateSummary(List<int> sentenceScores)
+        /// <summary>
+        /// controls all the sumary generation task
+        /// </summary>
+        /// <param name="sentenceIds">ids of selected sentences</param>
+        public void GenerateSummary(List<int> sentenceIds)
         {
-            TextModel summary = AssembleSummarySentences(sentenceScores);
+            TextModel rawSummary = AssembleSummarySentences(sentenceIds, _text);
+
+            TextModel summary = AssembleSummarySentences(sentenceIds, _unstemmedText);
 
             PrintSummary(summary);
         }
@@ -41,23 +49,21 @@ namespace TextSummarizerV1
         /// Maps the sentences from text to selected sentence Ids to create the summary
         /// </summary>
         /// <param name="sentenceIds"></param>
+        /// <param name="text"></param>
         /// <returns></returns>
-        public  TextModel AssembleSummarySentences(List<int> sentenceIds)
+        public  TextModel AssembleSummarySentences(List<int> sentenceIds,TextModel text)
         {
             TextModel summary = new TextModel();
 
             foreach (var sentenceId in sentenceIds)
             {
-                
-                var sentence = _text.GetSentence(sentenceId);
+                var sentence = text.GetSentence(sentenceId);
 
                 summary.AddSentence(sentence);
             }
-
              return summary;
         }
 
-
-
+    
     }
 }
