@@ -29,11 +29,18 @@ namespace TextSummarizerV1
             //send it to feature extraction
             FeatureExtractor featureExtractor = new FeatureExtractor(text);
 
-            featureExtractor.RunFeatureExtractor();
+            Dictionary<int,double> sentenceScores = featureExtractor.RunFeatureExtractor();
 
-            //send it to sentence selection and eassembly
+            //send it to sentence selection and assembly
+            SentenceSelector sentenceSelector = new SentenceSelector(text);
+
+            double thresholdValue = 5.0;
+
+            sentenceSelector.RunSentenceSelector(sentenceScores, thresholdValue);
 
             //send to generate summary
+
+
 
             //evalute performance
 
