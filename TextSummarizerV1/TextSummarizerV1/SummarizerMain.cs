@@ -12,6 +12,8 @@ namespace TextSummarizerV1
         static void Main(string[] args)
         {
 
+            TextModel text = new TextModel();
+
             //get the document
 
             string path = "..\\..\\Resources\\Test\\inputNews.txt";
@@ -22,9 +24,12 @@ namespace TextSummarizerV1
             //send it to preprocessing 
             Preprocessor preprocessor = new Preprocessor(initialText);
 
-            preprocessor.RunPreprocessor();
+            text = preprocessor.RunPreprocessor();
 
             //send it to feature extraction
+            FeatureExtractor featureExtractor = new FeatureExtractor(text);
+
+            featureExtractor.RunFeatureExtractor();
 
             //send it to sentence selection and eassembly
 

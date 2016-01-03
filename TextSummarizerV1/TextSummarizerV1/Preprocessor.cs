@@ -33,7 +33,7 @@ namespace TextSummarizerV1
         /// <summary>
         /// Manages the tasks of the preprocessor
         /// </summary>
-        public void RunPreprocessor()
+        public TextModel RunPreprocessor()
         {
             TextModel text = new TextModel();
 
@@ -52,8 +52,7 @@ namespace TextSummarizerV1
 
             TextModel inTextWordStemmed = WordStemmer(inTextNoStopWords);
 
-            
-
+            return inTextWordStemmed;
         }
 
 

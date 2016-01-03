@@ -10,53 +10,68 @@ namespace TextSummarizerV1
     class TextModel
     {
         
-        public static List<string> words;
-
-    
-    
-
         //Upper list is the represents sentences while the inner represents the words
-        private static List<List<string>> Text { get; set; }
-
+        private static List<List<string>> _text;
 
         public  TextModel()
         {
-        
-            Text = new List<List<string>>();
-
+            _text = new List<List<string>>();
         }
+
+
+        public TextModel(List<List<string>> text)
+        {
+            _text = text;
+        }
+
 
         public  void AddSentence(List<string> wordList)
         {
             wordList.RemoveAll(word => word.Equals(""));
 
-            Text.Add(wordList);
-
+            _text.Add(wordList);
         }
 
-        public static List<List<string>> GetText()
+
+        public List<List<string>> GetText()
         {
-            return Text;
+            return _text;
         }
+
 
         public int SentenceCount()
         {
-            return Text.Count;
+            return _text.Count;
         }
+
 
         public int WordCount(int sentencePostion)
         {
-            return Text[sentencePostion].Count;
+            return _text[sentencePostion].Count;
         }
+
 
         public string GetWord(int sentencePostion, int wordPosition)
         {
-            return Text[sentencePostion][wordPosition];
+            return _text[sentencePostion][wordPosition];
         }
+
+
+        public List<string> GetAllWords()
+        {
+            List<string> allWords = new List<string>();
+
+            foreach (var sentence in _text)
+            {
+               allWords.AddRange(sentence);
+            }
+            return allWords;
+        }
+
 
         public void SetWord(int sentencePostion, int wordPosition, string inputWord)
         {
-            Text[sentencePostion][wordPosition] = inputWord;
+            _text[sentencePostion][wordPosition] = inputWord;
         }
 
 
