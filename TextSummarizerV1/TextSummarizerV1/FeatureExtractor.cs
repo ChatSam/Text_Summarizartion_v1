@@ -9,14 +9,85 @@ namespace TextSummarizerV1
 {
     class FeatureExtractor
     {
-        private  TextModel _text;
+        private readonly TextModel _text;
+        private readonly TextModel _unstemmedText;
 
-        public FeatureExtractor(TextModel text)
+        public FeatureExtractor(TextModel text, TextModel unstemmedText)
         {
             _text = text;
+            _unstemmedText = unstemmedText;
         }
 
         public Dictionary<int, double> RunFeatureExtractor()
+        {
+            //TF - ISF feature
+            Dictionary<int, double> sentenceScoresTermFreqInvSentFreq =  RunTermFreqInverseSentFreqFeature();
+
+            // Cue Phrases feature
+            double scoreWeigthing = 0.3;
+
+            List<string> cuePhraseList= new List<string>()
+            {
+                "the best"," the most important","this paper","this article","the document",
+                "we concluded","in conclusion"
+            };
+
+            Dictionary<int, double> sentenceScoresforCuePhrase = RunCuePhraseFeature(cuePhraseList, scoreWeigthing);
+
+
+            Dictionary<int, double> finalSentenceScores = AddSentenceScores(sentenceScoresTermFreqInvSentFreq,
+                sentenceScoresforCuePhrase);
+
+            return finalSentenceScores;
+        }
+
+
+        private Dictionary<int, double> AddSentenceScores(Dictionary<int, double> sentenceScoresTermFreqInvSentFreq,
+            Dictionary<int, double> sentenceScoresforCuePhrase)
+        {
+            Dictionary<int,double> finalSentenceScores =  new Dictionary<int, double>();
+
+            for (int sentence = 0; sentence < _text.SentenceCount(); sentence++)
+            {
+                finalSentenceScores[sentence] = sentenceScoresTermFreqInvSentFreq[sentence] +
+                                                sentenceScoresforCuePhrase[sentence];
+            }
+
+            return finalSentenceScores;
+        }
+
+        private Dictionary<int, double> RunCuePhraseFeature(List<string>cuePhraseList, double scoreWeighting)
+        {
+            Dictionary<int, double> sentenceScore = new Dictionary<int, double>();
+
+            for (int sentenceNumber = 0; sentenceNumber< _unstemmedText.SentenceCount() ; sentenceNumber++)
+            {
+                var sentence = _unstemmedText.GetSentence(sentenceNumber);
+
+                string formedSentence = string.Join(" ", sentence );
+
+                var cuePhrasesInSentence = cuePhraseList.Any(phrase => formedSentence.Contains(phrase));
+
+                if (cuePhrasesInSentence)
+                {
+                    //todo: tweakable point to improve algortihm
+
+                    // the score is added to each word in the sentence per every cue phrase in the sentence.
+                    double scoreToAdd = scoreWeighting * _unstemmedText.WordCount(sentenceNumber) ;
+
+                    sentenceScore[sentenceNumber] = scoreToAdd;
+                }
+                else
+                {
+                    sentenceScore[sentenceNumber] = 0;
+                }
+            }
+
+            return sentenceScore;
+        }
+
+
+        private Dictionary<int, double> RunTermFreqInverseSentFreqFeature()
         {
             Dictionary<string, int> termFrequencyValues = CalculateTermFrequency();
 

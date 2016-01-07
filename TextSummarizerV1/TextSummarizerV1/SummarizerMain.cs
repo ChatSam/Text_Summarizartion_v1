@@ -25,8 +25,10 @@ namespace TextSummarizerV1
 
             text = preprocessor.RunPreprocessor();
 
+            TextModel unstemmedText = preprocessor.GetUnstemmedText();
+
             //send it to feature extraction
-            FeatureExtractor featureExtractor = new FeatureExtractor(text);
+            FeatureExtractor featureExtractor = new FeatureExtractor(text, unstemmedText);
 
             Dictionary<int,double> sentenceScores = featureExtractor.RunFeatureExtractor();
 
@@ -38,7 +40,7 @@ namespace TextSummarizerV1
 
             List<int>rankedSentenceIds = sentenceSelector.RunSentenceSelector(sentenceScores, thresholdValue);
 
-            TextModel unstemmedText =  preprocessor.GetUnstemmedText();
+           
 
             //send to generate summary
             SummaryGenerator summaryGenerator = new SummaryGenerator(text, unstemmedText);
