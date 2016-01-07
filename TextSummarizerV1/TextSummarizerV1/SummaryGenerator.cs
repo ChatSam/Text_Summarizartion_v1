@@ -34,7 +34,7 @@ namespace TextSummarizerV1
 
         public void PrintSummary(TextModel summary)
         {
-            for (int i = 0; i < summary.SentenceCount(); i++)
+            for (int i = 0; i < summary.GetSentenceCount(); i++)
             {
                 String outputSentence = " - " + string.Join(" " ,summary.GetSentence(i));
 

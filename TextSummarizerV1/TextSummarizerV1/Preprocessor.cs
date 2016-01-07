@@ -13,8 +13,7 @@ namespace TextSummarizerV1
     /// Text Summarizer Version 1
     /// Author - Chatura Samarasinghe
     /// References - Porter's alogoritm - http://tartarus.org/~martin/PorterStemmer/csharp3.txt
-    ///              - Author - Brad Patton - http://ratborg.blogspot.com/
-
+    ///            - Porter's algorithm C# version Author - Brad Patton - http://ratborg.blogspot.com/
 
 
 
@@ -46,11 +45,10 @@ namespace TextSummarizerV1
 
             IList<string> inSenetences = SegmentSentences(inTextLowerCase);
 
+            // partially pre-processed text (not stemmed)
             _unstemmedText = GetRawText(inSenetences);
 
             TextModel inTextNoStopWords = RemoveStopWordsAndPunctuation(ref inSenetences, stopWordFilePath);
-
-            //IList<string> inTextWordStemmed = WordStemmer(inTextNoStopWords);
 
             TextModel inTextWordStemmed = WordStemmer(inTextNoStopWords);
 
@@ -134,9 +132,9 @@ namespace TextSummarizerV1
         {
             Stemmer stemmer = new Stemmer();
 
-            for (int i = 0; i < text.SentenceCount(); i++)
+            for (int i = 0; i < text.GetSentenceCount(); i++)
             {
-                for (int k = 0; k < text.WordCount(i); k++)
+                for (int k = 0; k < text.GetWordCountInSentence(i); k++)
                 {
                     var stemmedWord = stemmer.StemWord(text.GetWord(i,k));
 

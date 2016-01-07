@@ -30,17 +30,18 @@ namespace TextSummarizerV1
             //send it to feature extraction
             FeatureExtractor featureExtractor = new FeatureExtractor(text, unstemmedText);
 
-            Dictionary<int,double> sentenceScores = featureExtractor.RunFeatureExtractor();
+            // score weight for the cue-phrase feature
+            double cuePhraseScoreWeighting = 0.3;
+
+            Dictionary<int,double> sentenceScores = featureExtractor.RunFeatureExtractor(cuePhraseScoreWeighting);
 
             //send it to sentence selection and assembly
             SentenceSelector sentenceSelector = new SentenceSelector(text);
 
-                //thresoldValue to controller the size of the summary
-                double thresholdValue = 7.0;
+            //thresoldValue to controller the size of the summary
+            double selectionThreshold = 0.7;
 
-            List<int>rankedSentenceIds = sentenceSelector.RunSentenceSelector(sentenceScores, thresholdValue);
-
-           
+            List<int>rankedSentenceIds = sentenceSelector.RunSentenceSelector(sentenceScores, selectionThreshold);
 
             //send to generate summary
             SummaryGenerator summaryGenerator = new SummaryGenerator(text, unstemmedText);

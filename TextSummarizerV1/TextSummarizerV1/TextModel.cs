@@ -11,7 +11,7 @@ namespace TextSummarizerV1
     {
         
         //Upper list is the represents sentences while the inner represents the words
-        private List<List<string>> _text;
+        private readonly List<List<string>> _text;
 
         public  TextModel()
         {
@@ -39,13 +39,13 @@ namespace TextSummarizerV1
         }
 
 
-        public int SentenceCount()
+        public int GetSentenceCount()
         {
             return _text.Count;
         }
 
 
-        public int WordCount(int sentencePostion)
+        public int GetWordCountInSentence(int sentencePostion)
         {
             return _text[sentencePostion].Count;
         }
@@ -77,13 +77,6 @@ namespace TextSummarizerV1
         public void SetWord(int sentencePostion, int wordPosition, string inputWord)
         {
             _text[sentencePostion][wordPosition] = inputWord;
-        }
-
-
-        //do getters and setters
-    }
-
-    internal class words
-    {
+        }    
     }
 }

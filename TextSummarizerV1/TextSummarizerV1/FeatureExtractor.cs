@@ -18,22 +18,24 @@ namespace TextSummarizerV1
             _unstemmedText = unstemmedText;
         }
 
-        public Dictionary<int, double> RunFeatureExtractor()
+        /// <summary>
+        ///  Handles all the feature extraction tasks
+        /// </summary>
+        /// <param name="cuePhraseScoreWeighting"> weighting for the cue phrase score</param>
+        /// <returns></returns>
+        public Dictionary<int, double> RunFeatureExtractor(double cuePhraseScoreWeighting)
         {
             //TF - ISF feature
             Dictionary<int, double> sentenceScoresTermFreqInvSentFreq =  RunTermFreqInverseSentFreqFeature();
 
-            // Cue Phrases feature
-            double scoreWeigthing = 0.3;
-
+          
             List<string> cuePhraseList= new List<string>()
             {
                 "the best"," the most important","this paper","this article","the document",
                 "we concluded","in conclusion"
             };
 
-            Dictionary<int, double> sentenceScoresforCuePhrase = RunCuePhraseFeature(cuePhraseList, scoreWeigthing);
-
+            Dictionary<int, double> sentenceScoresforCuePhrase = RunCuePhraseFeature(cuePhraseList, cuePhraseScoreWeighting);
 
             Dictionary<int, double> finalSentenceScores = AddSentenceScores(sentenceScoresTermFreqInvSentFreq,
                 sentenceScoresforCuePhrase);
@@ -42,12 +44,18 @@ namespace TextSummarizerV1
         }
 
 
+        /// <summary>
+        /// Combines all the sentence scores from each feature in to one score set
+        /// </summary>
+        /// <param name="sentenceScoresTermFreqInvSentFreq"></param>
+        /// <param name="sentenceScoresforCuePhrase"></param>
+        /// <returns></returns>
         private Dictionary<int, double> AddSentenceScores(Dictionary<int, double> sentenceScoresTermFreqInvSentFreq,
             Dictionary<int, double> sentenceScoresforCuePhrase)
         {
             Dictionary<int,double> finalSentenceScores =  new Dictionary<int, double>();
 
-            for (int sentence = 0; sentence < _text.SentenceCount(); sentence++)
+            for (int sentence = 0; sentence < _text.GetSentenceCount(); sentence++)
             {
                 finalSentenceScores[sentence] = sentenceScoresTermFreqInvSentFreq[sentence] +
                                                 sentenceScoresforCuePhrase[sentence];
@@ -56,11 +64,19 @@ namespace TextSummarizerV1
             return finalSentenceScores;
         }
 
+
+
+        /// <summary>
+        /// Handles the Cue Phrase Feature
+        /// </summary>
+        /// <param name="cuePhraseList"></param>
+        /// <param name="scoreWeighting"></param>
+        /// <returns></returns>
         private Dictionary<int, double> RunCuePhraseFeature(List<string>cuePhraseList, double scoreWeighting)
         {
             Dictionary<int, double> sentenceScore = new Dictionary<int, double>();
 
-            for (int sentenceNumber = 0; sentenceNumber< _unstemmedText.SentenceCount() ; sentenceNumber++)
+            for (int sentenceNumber = 0; sentenceNumber< _unstemmedText.GetSentenceCount() ; sentenceNumber++)
             {
                 var sentence = _unstemmedText.GetSentence(sentenceNumber);
 
@@ -68,12 +84,13 @@ namespace TextSummarizerV1
 
                 var cuePhrasesInSentence = cuePhraseList.Any(phrase => formedSentence.Contains(phrase));
 
+                //if there is a cue phrase exists, add the weighting score to the sentence (per each word)
                 if (cuePhrasesInSentence)
                 {
                     //todo: tweakable point to improve algortihm
 
                     // the score is added to each word in the sentence per every cue phrase in the sentence.
-                    double scoreToAdd = scoreWeighting * _unstemmedText.WordCount(sentenceNumber) ;
+                    double scoreToAdd = scoreWeighting * _unstemmedText.GetWordCountInSentence(sentenceNumber) ;
 
                     sentenceScore[sentenceNumber] = scoreToAdd;
                 }
@@ -87,11 +104,15 @@ namespace TextSummarizerV1
         }
 
 
+        /// <summary>
+        /// Handles the Term Frequency - Inverse Sentence Frequency Feature
+        /// </summary>
+        /// <returns></returns>
         private Dictionary<int, double> RunTermFreqInverseSentFreqFeature()
         {
             Dictionary<string, int> termFrequencyValues = CalculateTermFrequency();
 
-            Dictionary<string, int> sentenceFrequencyValues = CalculateSentenceFrequencyPerWord(termFrequencyValues);
+            Dictionary<string, int> sentenceFrequencyValues = CalculateSentenceFrequencyPerWord();
 
             Dictionary<string, double> inverseSentenceFrequencyValues =
                 CalculateInverseSentenceFrequency(sentenceFrequencyValues, termFrequencyValues);
@@ -106,6 +127,7 @@ namespace TextSummarizerV1
 
             return sentenceScore;
         }
+
 
         private  Dictionary<string, int> CalculateTermFrequency()
         {
@@ -128,9 +150,9 @@ namespace TextSummarizerV1
             return termFrequency;
         }
 
-        private  Dictionary<string, int> CalculateSentenceFrequencyPerWord(Dictionary<string,int> wordDictionary)
+        private  Dictionary<string, int> CalculateSentenceFrequencyPerWord()
         {
-            // this dictionary has the no. of the sentences in which the term i occurs
+            //this dictionary has the no. of the sentences in which a term (variable- word) occurs
             Dictionary<string, int> wordSenetenceCounter = new Dictionary<string, int>();
 
             foreach (var sentence in _text.GetText())
@@ -163,7 +185,7 @@ namespace TextSummarizerV1
             {
                 double ni = sentenceFrequency[word];
 
-                double N = _text.SentenceCount();
+                double N = _text.GetSentenceCount();
 
                 double value = N/ni;
 
@@ -221,17 +243,28 @@ namespace TextSummarizerV1
         {
             Dictionary<int,double> rankedSentence = new Dictionary<int, double>();
 
-            for (int i = 0; i < _text.SentenceCount(); i++)
+            for (int i = 0; i < _text.GetSentenceCount(); i++)
             {
                 double sentenceScore = 0;
 
-                for (int k = 0; k < _text.WordCount(i); k++)
+                for (int k = 0; k < _text.GetWordCountInSentence(i); k++)
                 {
                     sentenceScore += normalizedTermFreqInverseSentFreqValues[_text.GetWord(i, k)];
                 }
 
                 rankedSentence[i] = sentenceScore;
             }
+
+            //normalize
+
+            var highestSentenceScore = rankedSentence.Values.Max();
+
+            for (int i = 0; i < _text.GetSentenceCount(); i++)
+            {
+                rankedSentence[i] = rankedSentence[i]/highestSentenceScore;
+            }
+
+
             return rankedSentence;
         }
 
