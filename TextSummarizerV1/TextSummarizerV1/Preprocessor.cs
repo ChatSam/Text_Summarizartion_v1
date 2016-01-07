@@ -101,7 +101,11 @@ namespace TextSummarizerV1
             return text;
         }
 
-
+        /// <summary>
+        /// Gets the unstemmed text
+        /// </summary>
+        /// <param name="inSentences"></param>
+        /// <returns></returns>
         private static TextModel GetRawText(IList<string> inSentences)
         {
             TextModel rawText = new TextModel();
