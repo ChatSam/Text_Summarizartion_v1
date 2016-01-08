@@ -27,7 +27,6 @@ namespace TextSummarizerV1
         {
             //TF - ISF feature
             Dictionary<int, double> sentenceScoresTermFreqInvSentFreq =  RunTermFreqInverseSentFreqFeature();
-
           
             List<string> cuePhraseList= new List<string>()
             {
@@ -35,8 +34,10 @@ namespace TextSummarizerV1
                 "we concluded","in conclusion"
             };
 
+            // Cue Phrase feature
             Dictionary<int, double> sentenceScoresforCuePhrase = RunCuePhraseFeature(cuePhraseList, cuePhraseScoreWeighting);
 
+            //Added score of all the features
             Dictionary<int, double> finalSentenceScores = AddSentenceScores(sentenceScoresTermFreqInvSentFreq,
                 sentenceScoresforCuePhrase);
 
@@ -60,10 +61,8 @@ namespace TextSummarizerV1
                 finalSentenceScores[sentence] = sentenceScoresTermFreqInvSentFreq[sentence] +
                                                 sentenceScoresforCuePhrase[sentence];
             }
-
             return finalSentenceScores;
         }
-
 
 
         /// <summary>
@@ -105,7 +104,7 @@ namespace TextSummarizerV1
 
 
         /// <summary>
-        /// Handles the Term Frequency - Inverse Sentence Frequency Feature
+        /// Manages the Term Frequency - Inverse Sentence Frequency Feature functions
         /// </summary>
         /// <returns></returns>
         private Dictionary<int, double> RunTermFreqInverseSentFreqFeature()
@@ -121,14 +120,17 @@ namespace TextSummarizerV1
                 CalculateTermFreqInverseTermFreq(termFrequencyValues, inverseSentenceFrequencyValues);
 
             Dictionary<string, double> normalizedTermFreqInverseSentFreqValues =
-                Normalize(termFreqInverseSentenceFreqValues);
+                NormalizeIsfValues(termFreqInverseSentenceFreqValues);
 
             Dictionary<int, double> sentenceScore = CalculateSentenceScores(normalizedTermFreqInverseSentFreqValues);
 
             return sentenceScore;
         }
 
-
+        /// <summary>
+        /// Calculate the number of times a term is repeated
+        /// </summary>
+        /// <returns></returns>
         private  Dictionary<string, int> CalculateTermFrequency()
         {
             Dictionary<string, int> termFrequency = new Dictionary<string, int>();
@@ -199,6 +201,14 @@ namespace TextSummarizerV1
             return inverseSentenceFrequencyValues;
         }
 
+
+
+        /// <summary>
+        /// Primary Calculator function for TF-ISF feature
+        /// </summary>
+        /// <param name="termFrequency"></param>
+        /// <param name="inverseTermFrequency"></param>
+        /// <returns></returns>
         private  Dictionary<string, double> CalculateTermFreqInverseTermFreq(
             Dictionary<string, int> termFrequency, Dictionary<string, double> inverseTermFrequency)
         {
@@ -214,7 +224,12 @@ namespace TextSummarizerV1
             return termFreqInverseSentenceFreqValues;
         }
 
-        private  Dictionary<string, double> Normalize(Dictionary<string, double> termFreqInverseSentenceFreqValues)
+        /// <summary>
+        /// Normalizes Inverse Frequency values
+        /// </summary>
+        /// <param name="termFreqInverseSentenceFreqValues"></param>
+        /// <returns></returns>
+        private  Dictionary<string, double> NormalizeIsfValues(Dictionary<string, double> termFreqInverseSentenceFreqValues)
         {
             Dictionary<string,double> normalizedValues  = new Dictionary<string, double>();
 
@@ -232,12 +247,20 @@ namespace TextSummarizerV1
             return normalizedValues;
         }
 
+
+        /// <summary>
+        /// Improves on the normalization values to get values onto a 1-0 scale
+        /// </summary>
+        /// <param name="normalizedValue"></param>
+        /// <param name="maxNormalizedValue"></param>
+        /// <returns></returns>
         private  double FineNormalize(double normalizedValue, double maxNormalizedValue)
         {
             double fineNormalized = normalizedValue / maxNormalizedValue;
 
             return fineNormalized;
         }
+
 
         private  Dictionary<int, double> CalculateSentenceScores(Dictionary<string, double> normalizedTermFreqInverseSentFreqValues)
         {
@@ -255,8 +278,7 @@ namespace TextSummarizerV1
                 rankedSentence[i] = sentenceScore;
             }
 
-            //normalize
-
+            //normalize the sentences
             var highestSentenceScore = rankedSentence.Values.Max();
 
             for (int i = 0; i < _text.GetSentenceCount(); i++)
