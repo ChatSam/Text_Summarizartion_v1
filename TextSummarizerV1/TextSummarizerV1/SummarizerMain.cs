@@ -48,7 +48,12 @@ namespace TextSummarizerV1
 
             summaryGenerator.GenerateSummary(rankedSentenceIds);
 
-            //evalute performance
+            //evalaute performance
+            Evaluator summaryEvaluator = new Evaluator(summaryGenerator.GetGeneratedSummary());
+
+            string humanSummaryPath = "random string";
+
+            summaryEvaluator.RunEvaluator(humanSummaryPath);
 
             //save summary to doc
 

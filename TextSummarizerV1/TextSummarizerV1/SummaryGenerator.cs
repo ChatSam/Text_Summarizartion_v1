@@ -13,6 +13,8 @@ namespace TextSummarizerV1
         private readonly TextModel _text;
         private readonly TextModel _unstemmedText;
 
+        private TextModel summary { get; set; }
+
         public SummaryGenerator(TextModel text, TextModel orignalUnstemmedText)
         {
             _text = text;
@@ -27,7 +29,7 @@ namespace TextSummarizerV1
         {
             TextModel rawSummary = AssembleSummarySentences(sentenceIds, _text);
 
-            TextModel summary = AssembleSummarySentences(sentenceIds, _unstemmedText);
+            summary = AssembleSummarySentences(sentenceIds, _unstemmedText);
 
             PrintSummary(summary);
         }
@@ -64,6 +66,11 @@ namespace TextSummarizerV1
              return summary;
         }
 
-    
+        public TextModel GetGeneratedSummary()
+        {
+            return summary;
+        }
+
+
     }
 }
