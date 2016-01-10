@@ -36,9 +36,11 @@ namespace TextSummarizerV1
 
         public void PrintSummary(TextModel summary)
         {
+            Console.WriteLine('\n');
+
             for (int i = 0; i < summary.GetSentenceCount(); i++)
             {
-                String outputSentence = " - " + string.Join(" " ,summary.GetSentence(i));
+                String outputSentence = " - " + summary.GetSentenceAsAString(i);
 
                 Console.WriteLine(outputSentence);
             }

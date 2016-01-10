@@ -18,25 +18,22 @@ namespace TextSummarizerV1
             double cuePhraseScoreWeighting = 0.3;
 
             //thresoldValue to controller the size of the summary
-            double selectionThreshold = 0.55;
-
+            double defaultSelectionThreshold = 0.5;
 
             // ----------------------------------
 
+            double selectionThreshold;
 
-            TextModel text = new TextModel();
-
-            //get the document
-            string path = "..\\..\\Resources\\Test\\inputNews.txt";
-           
-
+            //Innitializes the program and prompts user for the file path of the document
+            var path = InnitializeProgram(out selectionThreshold, defaultSelectionThreshold);
+            
             //pass it to a string 
             string initialText = File.ReadAllText(path);
 
             //send it to preprocessing 
             Preprocessor preprocessor = new Preprocessor(initialText);
 
-            text = preprocessor.RunPreprocessor();
+            var text = preprocessor.RunPreprocessor();
 
             TextModel unstemmedText = preprocessor.GetUnstemmedText();
 
@@ -64,8 +61,49 @@ namespace TextSummarizerV1
 
             Console.ReadKey();
 
-            //save summary to doc
 
+        }
+
+        /// <summary>
+        ///  Innitializes the program an prompts the user for the file path of the 
+        /// document to be summarized
+        /// </summary>
+        /// <param name="selectionThreshold"> determines the size of the summary to be generated.</param>
+        /// <returns> the path of the document</returns>
+        private static string InnitializeProgram( out double selectionThreshold, double defaultSelectionThreshold)
+        {
+
+            string heading = "\t ----------- Text Summarizer C v1.0 ----------- \t \n";
+
+            Console.Write(new string(' ', (Console.WindowWidth - heading.Length)/2));
+
+            Console.WriteLine(heading);
+
+            Console.Write("Enter a document to summarize : ");
+
+            string path = Console.ReadLine();
+
+            while (File.Exists(path) == false)
+            {
+                Console.WriteLine("Invalid path");
+
+                Console.Write("Enter a document to summarize : ");
+
+                path = Console.ReadLine();
+            }
+
+            Console.Write("Enter a threshold value ( between 0 and 1) : ");
+
+            string threshold = Console.ReadLine();
+
+            if (double.TryParse(threshold, out selectionThreshold) == false )
+            {
+                selectionThreshold = defaultSelectionThreshold;
+
+                Console.WriteLine("using default threshold of value " + selectionThreshold);
+            }
+           
+            return path;
         }
     }
 }
