@@ -20,23 +20,18 @@ namespace TextSummarizerV1
             //thresoldValue to controller the size of the summary
             double selectionThreshold = 0.55;
 
-
             // ----------------------------------
-
-
-            TextModel text = new TextModel();
 
             //get the document
             string path = "..\\..\\Resources\\Test\\inputNews.txt";
            
-
-            //pass it to a string 
+            //pass the document to a string 
             string initialText = File.ReadAllText(path);
 
             //send it to preprocessing 
             Preprocessor preprocessor = new Preprocessor(initialText);
 
-            text = preprocessor.RunPreprocessor();
+            var text = preprocessor.RunPreprocessor();
 
             TextModel unstemmedText = preprocessor.GetUnstemmedText();
 
