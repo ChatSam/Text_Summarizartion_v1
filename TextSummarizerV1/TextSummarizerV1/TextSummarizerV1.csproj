@@ -60,6 +60,7 @@
   <ItemGroup>
     <Content Include="Resources\Preprocessing\minimal-stopwords.txt" />
     <Content Include="Resources\Preprocessing\standard-stopwords.txt" />
+    <Content Include="Resources\Test\humanSummaryNews.txt" />
     <Content Include="Resources\Test\inputNews.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

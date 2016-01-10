@@ -42,8 +42,6 @@ namespace TextSummarizerV1
 
                 Console.WriteLine(outputSentence);
             }
-
-            Console.ReadKey();
         }
 
 

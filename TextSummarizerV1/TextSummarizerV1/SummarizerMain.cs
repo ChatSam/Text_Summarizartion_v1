@@ -12,10 +12,23 @@ namespace TextSummarizerV1
         static void Main(string[] args)
         {
 
+            //------ Adjustable parameters ------ 
+
+            // score weight for the cue-phrase feature
+            double cuePhraseScoreWeighting = 0.3;
+
+            //thresoldValue to controller the size of the summary
+            double selectionThreshold = 0.55;
+
+
+            // ----------------------------------
+
+
             TextModel text = new TextModel();
 
             //get the document
             string path = "..\\..\\Resources\\Test\\inputNews.txt";
+           
 
             //pass it to a string 
             string initialText = File.ReadAllText(path);
@@ -30,16 +43,10 @@ namespace TextSummarizerV1
             //send it to feature extraction
             FeatureExtractor featureExtractor = new FeatureExtractor(text, unstemmedText);
 
-            // score weight for the cue-phrase feature
-            double cuePhraseScoreWeighting = 0.3;
-
             Dictionary<int,double> sentenceScores = featureExtractor.RunFeatureExtractor(cuePhraseScoreWeighting);
 
             //send it to sentence selection and assembly
             SentenceSelector sentenceSelector = new SentenceSelector(text);
-
-            //thresoldValue to controller the size of the summary
-            double selectionThreshold = 0.7;
 
             List<int>rankedSentenceIds = sentenceSelector.RunSentenceSelector(sentenceScores, selectionThreshold);
 
@@ -51,9 +58,11 @@ namespace TextSummarizerV1
             //evalaute performance
             Evaluator summaryEvaluator = new Evaluator(summaryGenerator.GetGeneratedSummary());
 
-            string humanSummaryPath = "random string";
+            string humanSummaryPath = "..\\..\\Resources\\Test\\humanSummaryNews.txt";
 
             summaryEvaluator.RunEvaluator(humanSummaryPath);
+
+            Console.ReadKey();
 
             //save summary to doc
 

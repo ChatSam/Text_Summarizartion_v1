@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -61,6 +62,32 @@ namespace TextSummarizerV1
             return _text[sentencePostion];
         }
 
+        public string GetSentenceAsAString(int sentencePostion)
+        {
+            string sentence = string.Join(" ", _text[sentencePostion]);
+
+
+            return sentence;
+        }
+
+
+        public List<string> GetSentencesAsStrings()
+        {
+            List<string> sentences = new List<string>();
+
+            for (int i = 0; i < _text.Count; i++)
+            {
+                string combinedSentence = GetSentenceAsAString(i);
+
+                if (combinedSentence.Equals("") == false)
+                {
+                    sentences.Add(combinedSentence);
+                }
+
+            }
+
+            return sentences;
+        }
 
         public List<string> GetAllWords()
         {

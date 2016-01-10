@@ -27,10 +27,10 @@ namespace TextSummarizerV1
         /// <param name="humanSummaryPath"></param>
         public void RunEvaluator(string humanSummaryPath)
         {
-            //get the human generated summary 
+            // get the human generated summary 
             var humanSummary = GetHumanGeneratedSummary(humanSummaryPath);
 
-            //calculate Recall
+            // calculate Recall
              Recall = CalculateRecall(humanSummary);
 
             // calculate Precsion
@@ -39,7 +39,7 @@ namespace TextSummarizerV1
             // calculate F- measure
              FMeasure = CalculateBalancedFmeasure(Precision, Recall);
 
-            //prints the results
+            // prints the results
             PrintStats();
              
         }
@@ -63,64 +63,72 @@ namespace TextSummarizerV1
         }
 
 
-        private Double CalculateRecall(TextModel humanSummaryText)
+        private double CalculateRecall(TextModel humanSummaryText)
         {
             // the count of sentences which exist in the generated summary
-            int recallCount = 0;
+            int recallCount = GetBaseSentenceCount(humanSummaryText);
 
-            var generatedText = _genratedSummary.GetText();
-
-            var humanGeneratedSummarySentences = humanSummaryText.GetText();
-
-            int humanGenSentenceCount = humanGeneratedSummarySentences.Count();
-
-            foreach (var sentence in humanGeneratedSummarySentences )
-            {
-                if (generatedText.Contains(sentence))
-                {
-                    recallCount++;
-                }
-            }
+            int humanGenSentenceCount = humanSummaryText.GetSentenceCount();
 
             double recall = Math.Round((double)recallCount / humanGenSentenceCount,3) ;
 
             return recall;
         }
 
-        private Double CalculatePrecision(TextModel humanSummaryText)
+        private double CalculatePrecision(TextModel humanSummaryText)
         {
-            int precisionCount = 0;
+            int precisionCount = GetBaseSentenceCount(humanSummaryText);
 
             int genratedSentenceCount = _genratedSummary.GetSentenceCount();
 
-            var humanGeneratedSummary = humanSummaryText.GetText();
-
-            foreach (var sentence in _genratedSummary.GetText())
-            {
-                if (humanGeneratedSummary.Contains(sentence))
-                {
-                    precisionCount++;
-                }
-            }
-
-            double precision = Math.Round((double) precisionCount/genratedSentenceCount,3);
+            double precision = Math.Round((double)precisionCount / genratedSentenceCount, 3);
 
             return precision;
         }
 
-        private Double CalculateBalancedFmeasure(double precision, double recall)
+        /// <summary>
+        /// Gets the count of sentences which are both in the generated text and the human summarized text
+        /// </summary>
+        /// <param name="humanSummaryText"></param>
+        /// <returns>count of sentences which exist in both texts</returns>
+        private int GetBaseSentenceCount(TextModel humanSummaryText)
+        {
+            int baseSentenceCount = 0;
+
+            var humanGeneratedSummarySentences = humanSummaryText.GetSentencesAsStrings();
+
+            for (int i = 0; i < _genratedSummary.GetSentenceCount(); i++)
+            {
+                var generatedSentence = _genratedSummary.GetSentenceAsAString(i);
+
+                if (humanGeneratedSummarySentences.Contains(generatedSentence))
+                {
+                    baseSentenceCount++;
+                }
+            }
+            return baseSentenceCount;
+        }
+
+
+        private double CalculateBalancedFmeasure(double precision, double recall)
         {
             double fMeasureCalculation = (2 * precision * recall )/ (precision + recall);
 
-            return fMeasureCalculation;
+            return Math.Round(fMeasureCalculation ,3) ;
         }
 
 
         public void PrintStats()
         {
-            Console.WriteLine("Precision : "+ Precision);
-            Console.WriteLine("Recal :" + Recall);
-            Console.WriteLine("F-Measure :" + FMeasure);
+            Console.WriteLine();
+            Console.WriteLine("--------- Evaluation ---------");
+
+            Console.WriteLine(
+            "\n Precision : " + Precision + "\n" 
+            + "\n Recal :" + Recall + "\n"
+            + "\n F-Measure :" + FMeasure + "\n");
+
+            Console.WriteLine("------------------------------");
         }
 
     }
