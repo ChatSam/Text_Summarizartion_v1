@@ -87,7 +87,7 @@ namespace TextSummarizerV1
             {
                 Console.WriteLine("Invalid path");
 
-                Console.Write("Enter a document to summarize : ");
+                Console.Write("Enter the file path of a document to summarize : ");
 
                 path = Console.ReadLine();
             }
