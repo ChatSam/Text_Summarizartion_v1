@@ -278,7 +278,7 @@ namespace TextSummarizerV1
                 rankedSentence[i] = sentenceScore;
             }
 
-            //normalize the sentences
+            //normalize the sentence scores
             var highestSentenceScore = rankedSentence.Values.Max();
 
             for (int i = 0; i < _text.GetSentenceCount(); i++)

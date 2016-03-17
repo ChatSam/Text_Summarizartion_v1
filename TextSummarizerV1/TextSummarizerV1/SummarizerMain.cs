@@ -69,6 +69,7 @@ namespace TextSummarizerV1
         /// document to be summarized
         /// </summary>
         /// <param name="selectionThreshold"> determines the size of the summary to be generated.</param>
+        /// <param name="defaultSelectionThreshold">the default threshold value</param>
         /// <returns> the path of the document</returns>
         private static string InnitializeProgram( out double selectionThreshold, double defaultSelectionThreshold)
         {
@@ -79,7 +80,7 @@ namespace TextSummarizerV1
 
             Console.WriteLine(heading);
 
-            Console.Write("Enter a document to summarize : ");
+            Console.Write("Enter a document path to summarize : ");
 
             string path = Console.ReadLine();
 
