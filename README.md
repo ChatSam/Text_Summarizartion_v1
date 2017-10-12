@@ -1,2 +1,4 @@
-Text_Summarization_v1
+## Text Summarizer v1
 =====================
+
+* An Extractraction based automatic text Summarizer
